@@ -1,4 +1,3 @@
-CREATE INDEX ind_srid ON CourseRegistrations(StudentRegistrationId);
 CREATE MATERIALIZED VIEW Info AS (SELECT cr.StudentRegistrationId, SUM(case when Grade >= 5 then cr.Grade * c.ECTS  else 0 end)/SUM(case when Grade >= 5 then ECTS*1.0 end) AS GPA, SUM(case when Grade >= 5 then ECTS else 0 end) AS ObtainedECTS, MIN(Grade) AS mingrade FROM CourseRegistrations cr, CourseOffers co, Courses c WHERE cr.CourseOfferId = co.CourseOfferId AND co.courseId = c.courseId GROUP BY cr.StudentRegistrationId);
 CREATE MATERIALIZED VIEW StudentsByGrade AS (SELECT c.CourseId, Grade, COUNT(*) AS nr FROM CourseRegistrations cr, Courses c, CourseOffers co WHERE Grade is not null AND cr.CourseOfferId=co.CourseOfferId AND co.CourseId = c.CourseId GROUP BY c.CourseId, Grade);
 CREATE MATERIALIZED VIEW StudentsByCourse AS (SELECT CourseId, SUM(nr) AS total FROM StudentsByGrade GROUP BY CourseId);
